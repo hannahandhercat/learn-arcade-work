@@ -94,7 +94,7 @@ def main():
     draw_big_tree(300, 300)
     draw_big_tree(200, 280)
 
-    # Draw many relatively little trees in the background.
+    # Draw many relatively small trees in the background.
     draw_little_tree(200, 350)
     draw_little_tree(150, 400)
     draw_little_tree(275, 350)

@@ -29,9 +29,6 @@ def draw_flower(x, y):
     arcade.draw_circle_filled(x, y, 8, arcade.csscolor.YELLOW, num_segments=32)
 
 
-def cloud(x, y):
-
-
 def main():
     arcade.open_window(SCREEN_WIDTH, SCREEN_HEIGHT, "Lab 03")
     arcade.set_background_color(arcade.csscolor.WHITE_SMOKE)

@@ -34,8 +34,6 @@ def draw_flower(x, y):
     arcade.draw_circle_filled(x, y, 8, arcade.csscolor.YELLOW, num_segments=32)
 
 
-<<<<<<< HEAD
-=======
 def draw_cloud(x, y):
     """Draw a cloud."""
     arcade.draw_circle_outline(x, y, 23, arcade.csscolor.WHITE, 3)
@@ -65,7 +63,6 @@ def draw_little_tree(x, y):
     arcade.draw_triangle_filled(x + 15, y - 5, x, y + 20, x - 15, y - 5, (100, 158, 120))
 
 
->>>>>>> 485f68ef629594d997dbf99d509dc5083c3c7363
 def main():
     """Draw main function."""
     # Open window, set background color, begin render.
@@ -117,9 +114,6 @@ def main():
     arcade.run()
 
 
-<<<<<<< HEAD
-main()
-=======
 # Run main function
 main()
->>>>>>> 485f68ef629594d997dbf99d509dc5083c3c7363
+

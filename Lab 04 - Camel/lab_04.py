@@ -58,7 +58,7 @@ def main():
                 print("You are out of water.")
             else:
                 water_bottle = water_bottle - 1
-        if thirst > 4 and thirst < 6:
+        if 4 < thirst < 6:
             print("You are thirsty!")
         elif thirst >= 6:
             done = True

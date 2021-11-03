@@ -76,16 +76,16 @@ class MyGame(arcade.Window):
         # Moving coins in a cool in sinc pattern:
         """for i in range(COIN_COUNT):
             coin = Coin("coin_01.png", SPRITE_SCALING_COIN)
-            coin.center_x = SCREEN_WIDTH / 2
-            coin.center_y = i * 20 
+            slime.center_x = SCREEN_WIDTH / 2
+            slime.center_y = i * 20 
             
             if i % 2 == 0:
-                coin.change_x = -1
+                slime.change_x = -1
             else:
-                coin.change_x = 1
+                slime.change_x = 1
                 
-            coin.change_y = 0 
-            self.coin_list.append(coin)"""
+            slime.change_y = 0 
+            self.bad_sprite_list.append(slime)"""
 
     def on_draw(self):
         arcade.start_render()

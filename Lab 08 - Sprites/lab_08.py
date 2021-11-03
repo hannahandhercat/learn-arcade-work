@@ -75,16 +75,17 @@ class MyGame(arcade.Window):
 
     def on_mouse_motion(self, x, y, dx, dy):
 
-        self.player_sprite.center_x = x
-        self.player_sprite.center_y = y
+        if len(self.good_sprite_list) > 0:
+            self.player_sprite.center_x = x
+            self.player_sprite.center_y = y
 
     def update(self, delta_time):
 
         if len(self.good_sprite_list) > 0:
             self.good_sprite_list.update()
             self.bad_sprite_list.update()
-        elif len(self.good_sprite_list) <= 0:
-            arcade.draw_text("GAME OVER", 300, 400, arcade.csscolor.BLACK, 14)
+        elif len(self.good_sprite_list) == 0:
+            arcade.draw_text("Game Over", 300, 300, arcade.csscolor.BLACK, 14)
 
         good_hit_list = arcade.check_for_collision_with_list(self.player_sprite, self.good_sprite_list)
 

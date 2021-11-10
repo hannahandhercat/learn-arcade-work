@@ -13,6 +13,37 @@ CAMERA_SPEED = 0.1
 
 PLAYER_MOVEMENT_SPEED = 7
 
+TEXTURE_LEFT = 0
+TEXTURE_RIGHT = 1
+
+
+class Slime(arcade.Sprite):
+
+    def __init__(self):
+        super().__init__()
+
+        self.scale = SPRITE_SCALING
+        self.textures = []
+
+        texture = arcade.load_texture("slimeBlue.png")
+        self.textures.append(texture)
+
+        texture = arcade.load_texture("slimeBlue.png", flipped_horizontally=True)
+        self.textures.append(texture)
+
+        self.texture = texture
+
+    def update(self):
+
+        if self.change_x < 0:
+            self.texture = self.textures[TEXTURE_LEFT]
+        elif self.change_x > 0:
+            self.texture = self.textures[TEXTURE_RIGHT]
+
+
+class Gem(arcade.Sprite):
+    pass
+
 
 class MyGame(arcade.Window):
 
@@ -23,6 +54,7 @@ class MyGame(arcade.Window):
         # Sprite lists
         self.player_list = None
         self.wall_list = None
+        self.gem_list = None
 
         # Set up the player
         self.player_sprite = None
@@ -43,12 +75,12 @@ class MyGame(arcade.Window):
         self.wall_list = arcade.SpriteList()
 
         # Set up the player
-        self.player_sprite = arcade.Sprite("slimeBlue.png", SPRITE_SCALING)
+        self.player_sprite = Slime()
         self.player_sprite.center_x = 256
         self.player_sprite.center_y = 512
         self.player_list.append(self.player_sprite)
 
-        # -- Set up several columns of walls
+        # Saw Barrier
         for item in range(175, 1200, 50):
             saw = arcade.Sprite("sawHalf.png", SPRITE_SCALING)
             saw.center_x = item
@@ -70,35 +102,67 @@ class MyGame(arcade.Window):
             saw.center_y = item
             self.wall_list.append(saw)
 
+        # Bottom Row
         for x in range(200, 500, 50):
             slime_wall = arcade.Sprite("slimeBlock.png", SPRITE_SCALING)
             slime_wall.center_x = x
-            slime_wall.center_y = 500
+            slime_wall.center_y = 250
             self.wall_list.append(slime_wall)
-        for x in range(700, 1000, 50):
+        for x in range(550, 750, 50):
             slime_wall = arcade.Sprite("slimeBlock.png", SPRITE_SCALING)
             slime_wall.center_x = x
-            slime_wall.center_y = 500
+            slime_wall.center_y = 250
             self.wall_list.append(slime_wall)
-        for x in range(500, 700, 50):
+        for x in range(800, 1200, 50):
             slime_wall = arcade.Sprite("slimeBlock.png", SPRITE_SCALING)
             slime_wall.center_x = x
-            slime_wall.center_y = 200
+            slime_wall.center_y = 250
             self.wall_list.append(slime_wall)
-        for x in range(500, 700, 50):
+
+        # Next Row
+        for x in range(200, 600, 50):
             slime_wall = arcade.Sprite("slimeBlock.png", SPRITE_SCALING)
             slime_wall.center_x = x
             slime_wall.center_y = 400
             self.wall_list.append(slime_wall)
-        for x in range(200, 500, 50):
+        for x in range(700, 1200, 50):
             slime_wall = arcade.Sprite("slimeBlock.png", SPRITE_SCALING)
             slime_wall.center_x = x
-            slime_wall.center_y = 300
+            slime_wall.center_y = 400
             self.wall_list.append(slime_wall)
-        for x in range(700, 1100, 50):
+
+        # Next Row
+        for x in range(200, 450, 50):
             slime_wall = arcade.Sprite("slimeBlock.png", SPRITE_SCALING)
             slime_wall.center_x = x
-            slime_wall.center_y = 300
+            slime_wall.center_y = 550
+            self.wall_list.append(slime_wall)
+        for x in range(500, 900, 50):
+            slime_wall = arcade.Sprite("slimeBlock.png", SPRITE_SCALING)
+            slime_wall.center_x = x
+            slime_wall.center_y = 550
+            self.wall_list.append(slime_wall)
+        for x in range(975, 1100, 50):
+            slime_wall = arcade.Sprite("slimeBlock.png", SPRITE_SCALING)
+            slime_wall.center_x = x
+            slime_wall.center_y = 550
+            self.wall_list.append(slime_wall)
+
+        # Top Row
+        for x in range(200, 700, 50):
+            slime_wall = arcade.Sprite("slimeBlock.png", SPRITE_SCALING)
+            slime_wall.center_x = x
+            slime_wall.center_y = 700
+            self.wall_list.append(slime_wall)
+        for x in range(800, 1000, 50):
+            slime_wall = arcade.Sprite("slimeBlock.png", SPRITE_SCALING)
+            slime_wall.center_x = x
+            slime_wall.center_y = 700
+            self.wall_list.append(slime_wall)
+        for x in range(1050, 1200, 50):
+            slime_wall = arcade.Sprite("slimeBlock.png", SPRITE_SCALING)
+            slime_wall.center_x = x
+            slime_wall.center_y = 700
             self.wall_list.append(slime_wall)
 
         self.physics_engine = arcade.PhysicsEngineSimple(self.player_sprite, self.wall_list)
@@ -113,6 +177,7 @@ class MyGame(arcade.Window):
 
         self.wall_list.draw()
         self.player_list.draw()
+        self.gem_list.draw()
 
         self.camera_gui.use()
 
@@ -145,6 +210,8 @@ class MyGame(arcade.Window):
     def on_update(self, delta_time):
 
         self.physics_engine.update()
+
+        self.player_list.update()
 
         lower_left_corner = (self.player_sprite.center_x - self.width / 2,
                              self.player_sprite.center_y - self.height / 2)

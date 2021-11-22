@@ -26,16 +26,6 @@ class MyGame(arcade.Window):
             for column in range(COLUMN_COUNT):
                 self.grid[row].append(0)
 
-        """ Appending numbers to items! """
-        """ REMEMBER: First ROW then COLUMN """
-
-        self.grid[0][0] = 1
-
-        self.grid[1][5] = 1
-
-        # Super cool advanced way of making a grid with list using ONLY ONE line!
-        """self.grid = [[0 for x in range(10)] for y in range(10)]"""
-
     def on_draw(self):
         """
         Render the screen.
@@ -55,13 +45,23 @@ class MyGame(arcade.Window):
         """
         Called when the user presses a mouse button.
         """
+        cell_count = 0
+        row_cell_count = 0
         row = y // (HEIGHT + MARGIN)
         column = x // (WIDTH + MARGIN)
-        print("Click!", row, column)
         if self.grid[row][column] == 0:
             self.grid[row][column] = 1
         else:
             self.grid[row][column] = 0
+
+        for row in range(ROW_COUNT):
+            if self.grid[row][column] == 1:
+                row_cell_count += 1
+            for column in range(COLUMN_COUNT):
+                if self.grid[row][column] == 1:
+                    cell_count += 1
+        print(f"Total of {cell_count} cells are selected")
+        print(f"Row {row} has {row_cell_count} selected")
 
 
 def main():

@@ -47,6 +47,7 @@ a_list = [15, 57, 14, 33, 72, 79, 26, 56, 42, 40]
 selection_sort(a_list)
 print(a_list)
 
+# How many times do we loop a list?
 # n = elements in a list
 # n = 10, 10 * 5 = 50
 # n = 100, 100 * 50 = 5,000

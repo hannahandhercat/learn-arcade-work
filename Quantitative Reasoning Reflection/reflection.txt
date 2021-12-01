@@ -1,0 +1,43 @@
+Hannah Brewer
+12/01/21
+Quantitative Reasoning Reflection
+
+1. By using the idea that if you have a large problem, break it down into
+smaller parts, I was able to discern which techniques to use in my programs.
+For example, if I needed to create a text based adventure with multiple options
+depending on the users choice I would figure that I'd need a couple of
+"if statements" to reflect the different outcomes of the different options.
+If I needed to the same thing multiple times, like creating a sequence of the
+same wall in a game, I would decide to use a loop to create them quickly
+instead of writing code for each individual wall. If I needed to create an
+object or character with a consistent setup, I would create a class to use and
+create different instances of the class throughout the rest of my program.
+Deciding which methods to use depended on what I wanted to do and what I wanted
+to make possible in my code, it required me to break down what I was doing to
+small consistent steps to eventually create a larger picture.
+
+2. When trying to communicate and explain your code to others it's important
+to first ask if you yourself could understand your code if your were an
+outsider looking in. Making your code clear and readable depends on naming
+variables and functions logically, making sure instead of making a "t" variable
+you name it to reflect what it represents. It's also important to put clear
+and concise comments throughout your code, so that you explain why your code is
+important and what its purpose is within the program. It's also important to
+write and place your code in a logical order, so don't put your main function
+between two classes or functions that you use in the main function. Grouping
+like things together within your code also helps to make it more readable, you
+can do this by keeping all of your "if statements" in the same area under a
+function, or grouping all the variables within a function together.
+
+3. When evaluating the accuracy of your code, it's important to try and test
+for every possible scenario and outcome, and make sure they all line up with
+what's expected.
+- Does it crash when you run it?
+- Deciphering and understanding the errors
+- Do you get your expected output?
+- Using print statements to figure out what's going on
+
+4.
+- Our world is completely targeted at what we like, isolating us, making us
+forget there's more to the world than just what we're interested in.
+- People are much more complex than just a number or a score.

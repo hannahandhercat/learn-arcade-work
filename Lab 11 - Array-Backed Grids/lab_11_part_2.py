@@ -45,8 +45,6 @@ class MyGame(arcade.Window):
         """
         Called when the user presses a mouse button.
         """
-        cell_count = 0
-        row_cell_count = 0
         row = y // (HEIGHT + MARGIN)
         column = x // (WIDTH + MARGIN)
         if self.grid[row][column] == 0:
@@ -54,14 +52,30 @@ class MyGame(arcade.Window):
         else:
             self.grid[row][column] = 0
 
+        cell_count = 0
         for row in range(ROW_COUNT):
-            if self.grid[row][column] == 1:
-                row_cell_count += 1
+            row_cell_count = 0
+            continuous_count = 0
             for column in range(COLUMN_COUNT):
                 if self.grid[row][column] == 1:
                     cell_count += 1
+                    row_cell_count += 1
+                    continuous_count += 1
+                else:
+                    if continuous_count >= 2:
+                        print(f"There are {continuous_count} continuous in selected row {row}")
+                    continuous_count = 0
+            print(f"Row {row} has {row_cell_count} selected")
+            if continuous_count >= 2:
+                print(f"There are {continuous_count} continuous in selected row {row}")
         print(f"Total of {cell_count} cells are selected")
-        print(f"Row {row} has {row_cell_count} selected")
+
+        for column in range(COLUMN_COUNT):
+            column_cell_count = 0
+            for row in range(ROW_COUNT):
+                if self.grid[row][column] == 1:
+                    column_cell_count += 1
+            print(f"Column {column} has {column_cell_count} selected")
 
 
 def main():

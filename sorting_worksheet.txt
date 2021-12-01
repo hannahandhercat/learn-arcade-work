@@ -123,36 +123,44 @@ import random
 
 
 def selection_sort(my_list):
-
+    outside_loop_count = 0
+    inside_loop_count = 0
     for cur_pos in range(len(my_list)):
-        # Find the position that has the smallest number
-        # Start with the current position
+        outside_loop_count += 1
         min_pos = cur_pos
 
         for scan_pos in range(cur_pos + 1, len(my_list)):
-
+            inside_loop_count += 1
             if my_list[scan_pos] < my_list[min_pos]:
-                # It is, mark this position as the smallest
                 min_pos = scan_pos
 
         temp = my_list[min_pos]
         my_list[min_pos] = my_list[cur_pos]
         my_list[cur_pos] = temp
 
+    print(f"Outside Loop: {outside_loop_count}")
+    print(f"Inside Loop: {inside_loop_count}")
+
 
 def insertion_sort(my_list):
-
+    outside_loop_count = 0
+    inside_loop_count = 0
     for key_pos in range(1, len(my_list)):
-
+        outside_loop_count += 1
         key_value = my_list[key_pos]
 
         scan_pos = key_pos - 1
 
         while (scan_pos >= 0) and (my_list[scan_pos] > key_value):
+            inside_loop_count += 1
             my_list[scan_pos + 1] = my_list[scan_pos]
             scan_pos = scan_pos - 1
 
         my_list[scan_pos + 1] = key_value
+
+    print(f"Outside Loop: {outside_loop_count}")
+    print(f"Inside Loop: {inside_loop_count}")
+
 
 def print_list(my_list):
     for item in my_list:
@@ -163,7 +171,7 @@ def print_list(my_list):
 def main():
     list_for_selection_sort = []
     list_for_insertion_sort = []
-    list_size = 10
+    list_size = 100
     for i in range(list_size):
         new_number = random.randrange(100)
         list_for_selection_sort.append(new_number)
@@ -171,10 +179,12 @@ def main():
 
     print("Original List")
     print_list(list_for_selection_sort)
+    print()
 
     print("Selection Sort")
     selection_sort(list_for_selection_sort)
     print_list(list_for_selection_sort)
+    print()
 
     print("Insertion Sort")
     insertion_sort(list_for_insertion_sort)
@@ -182,3 +192,19 @@ def main():
 
 
 main()
+
+Results:
+Original List
+ 72 44 43 30 55 16 98 64 42 53 75 82 82 52 68 91 47 27 96 99 54 51 60 90 37 83 93 65 48 87 30 74 54 87 35  2 97 24 52 71 53  4 95 29  8 59 39 88 84 78  2  9 52 79 65 78  1 81 79 94 31 68 31  2 53 58 12 39 84 84 94 95 29 77 46  5 68 98  7 47 30 22 34  2 93 10 52 44  4 86 46 82 57 99 50 93 65 49 82 52
+
+Selection Sort
+Outside Loop: 100
+Inside Loop: 4950
+  1  2  2  2  2  4  4  5  7  8  9 10 12 16 22 24 27 29 29 30 30 30 31 31 34 35 37 39 39 42 43 44 44 46 46 47 47 48 49 50 51 52 52 52 52 52 53 53 53 54 54 55 57 58 59 60 64 65 65 65 68 68 68 71 72 74 75 77 78 78 79 79 81 82 82 82 82 83 84 84 84 86 87 87 88 90 91 93 93 93 94 94 95 95 96 97 98 98 99 99
+
+Insertion Sort
+Outside Loop: 99
+Inside Loop: 2552
+  1  2  2  2  2  4  4  5  7  8  9 10 12 16 22 24 27 29 29 30 30 30 31 31 34 35 37 39 39 42 43 44 44 46 46 47 47 48 49 50 51 52 52 52 52 52 53 53 53 54 54 55 57 58 59 60 64 65 65 65 68 68 68 71 72 74 75 77 78 78 79 79 81 82 82 82 82 83 84 84 84 86 87 87 88 90 91 93 93 93 94 94 95 95 96 97 98 98 99 99
+
+Process finished with exit code 0

@@ -26,9 +26,6 @@ class MyGame(arcade.Window):
             for column in range(COLUMN_COUNT):
                 self.grid[row].append(0)
 
-    def setup(self):
-        pass
-
     def on_draw(self):
         """
         Render the screen.
@@ -50,7 +47,6 @@ class MyGame(arcade.Window):
         """
         row = y // (HEIGHT + MARGIN)
         column = x // (WIDTH + MARGIN)
-        print("Click!", row, column)
         if self.grid[row][column] == 0:
             self.grid[row][column] = 1
         else:

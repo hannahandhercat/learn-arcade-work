@@ -66,6 +66,7 @@ class MyGame(arcade.Window):
                         print(f"There are {continuous_count} continuous in selected row {row}")
                     continuous_count = 0
             print(f"Row {row} has {row_cell_count} selected")
+
             if continuous_count >= 2:
                 print(f"There are {continuous_count} continuous in selected row {row}")
         print(f"Total of {cell_count} cells are selected")

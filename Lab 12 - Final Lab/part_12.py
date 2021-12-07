@@ -15,22 +15,25 @@ import arcade
 
 SPRITE_SCALING = 0.5
 
-DEFAULT_SCREEN_WIDTH = 800
+DEFAULT_SCREEN_WIDTH = 1000
 DEFAULT_SCREEN_HEIGHT = 600
 SCREEN_TITLE = "Sprite Move with Scrolling Screen Example"
 SPRITE_PIXEL_SIZE = 128
 GRID_PIXEL_SIZE = (SPRITE_PIXEL_SIZE * SPRITE_SCALING)
+TILE_SCALING = .5
 
 # How many pixels to keep as a minimum margin between the character
 # and the edge of the screen.
 VIEWPORT_MARGIN = SPRITE_PIXEL_SIZE * SPRITE_SCALING
 RIGHT_MARGIN = 4 * SPRITE_PIXEL_SIZE * SPRITE_SCALING
 
-# How fast the camera pans to the player. 1.0 is instant.
-CAMERA_SPEED = 0.1
-
 # How fast the character moves
-PLAYER_MOVEMENT_SPEED = 5
+MOVEMENT_SPEED = 10 * SPRITE_SCALING
+JUMP_SPEED = 28 * SPRITE_SCALING
+GRAVITY = .9 * SPRITE_SCALING
+
+LAYER_NAME_STATIC_WALLS = "Static Walls"
+LAYER_NAME_MOVING_WALLS = "Moving Walls"
 
 
 class MyGame(arcade.Window):
@@ -42,19 +45,24 @@ class MyGame(arcade.Window):
         """
         super().__init__(width, height, title, resizable=True)
 
+        self.tile_map = None
+        self.scene = None
+
         # Sprite lists
         self.player_list = None
-        self.wall_list = None
+        self.all_wall_list = None
+
+        self.static_wall_list = None
+        self.moving_wall_list = None
 
         # Set up the player
         self.player_sprite = None
-
-        # Physics engine so we don't run into walls.
         self.physics_engine = None
+        self.view_left = 0
+        self.view_bottom = 0
+        self.end_of_map = 0
+        self.game_over = False
 
-        # Create the cameras. One for the GUI, one for the sprites.
-        # We scroll the 'sprite world' but not the GUI.
-        self.camera_sprites = arcade.Camera(DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT)
         self.camera_gui = arcade.Camera(DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT)
 
     def setup(self):
@@ -62,24 +70,48 @@ class MyGame(arcade.Window):
 
         # Sprite lists
         self.player_list = arcade.SpriteList()
-        self.wall_list = arcade.SpriteList()
+        self.all_wall_list = arcade.SpriteList()
+        self.static_wall_list = arcade.SpriteList()
+        self.moving_wall_list = arcade.SpriteList()
 
         # Set up the player
         self.player_sprite = arcade.Sprite(":resources:images/animated_characters/female_person/femalePerson_idle.png",
                                            scale=0.4)
-        self.player_sprite.center_x = 256
-        self.player_sprite.center_y = 512
-        self.player_list.append(self.player_sprite)
+        self.player_sprite.center_x = 400
+        self.player_sprite.center_y = 600
+        # I left off trying to figure out how to add my sprite using the instructions
+        # in arcade academy on a Simple Platformer: Step 10!
 
+        self.end_of_map = self.tile_map.width * GRID_PIXEL_SIZE
+
+        # Set this to the name of your map.
+        # Make sure it is saved in the same directory as your program.
         map_name = "Final_Lab_test_1.json"
-        self.tile_map = arcade.load_tilemap(map_name, scaling=SPRITE_SCALING)
-        self.wall_list = self.tile_map.sprite_lists["Platforms"]
 
-        self.physics_engine = arcade.PhysicsEnginePlatformer(self.player_sprite, self.wall_list, gravity_constant=0.5)
+        layer_options = {
+            LAYER_NAME_STATIC_WALLS: {"use_spatial_hash": True},
+            LAYER_NAME_MOVING_WALLS: {"use_spatial_hash": True},
+            },
 
-        # Set the background color
+        # Read in the tiled map
+        self.tile_map = arcade.load_tilemap(map_name, scaling=TILE_SCALING)
+
+        self.scene = arcade.Scene.from_tilemap(self.tile_map)
+
+        # Set wall SpriteList and any others that you have.
+        self.static_wall_list = self.tile_map.sprite_lists["Static Walls"]
+        self.moving_wall_list = self.tile_map.sprite_lists["Moving Walls"]
+
+        # Set the background color to what is specified in the map
         if self.tile_map.background_color:
             arcade.set_background_color(self.tile_map.background_color)
+
+            # Create the 'physics engine'
+            self.physics_engine = arcade.PhysicsEnginePlatformer(
+                self.player_sprite,
+                gravity_constant=GRAVITY,
+                walls=self.scene[LAYER_NAME_STATIC_WALLS],
+            )
 
     def on_draw(self):
         """
@@ -90,10 +122,10 @@ class MyGame(arcade.Window):
         arcade.start_render()
 
         # Select the camera we'll use to draw all our sprites
-        self.camera_sprites.use()
 
         # Draw all the sprites.
-        self.wall_list.draw()
+        self.static_wall_list.draw()
+        self.moving_wall_list.draw()
         self.player_list.draw()
 
         # Select the (unscrolled) camera for our GUI
@@ -115,9 +147,9 @@ class MyGame(arcade.Window):
             if self.physics_engine.can_jump():
                 self.player_sprite.change_y = 12
         elif key == arcade.key.LEFT:
-            self.player_sprite.change_x = -PLAYER_MOVEMENT_SPEED
+            self.player_sprite.change_x = -MOVEMENT_SPEED
         elif key == arcade.key.RIGHT:
-            self.player_sprite.change_x = PLAYER_MOVEMENT_SPEED
+            self.player_sprite.change_x = MOVEMENT_SPEED
 
     def on_key_release(self, key, modifiers):
         """Called when the user releases a key. """
@@ -185,7 +217,6 @@ class MyGame(arcade.Window):
         Resize window
         Handle the user grabbing the edge and resizing the window.
         """
-        self.camera_sprites.resize(int(width), int(height))
         self.camera_gui.resize(int(width), int(height))
 
 

@@ -11,6 +11,7 @@ VIEWPOINT_MARGIN = 220
 CAMERA_SPEED = 0.5
 
 PLAYER_MOVEMENT_SPEED = 5
+JUMP_SPEED = 13
 
 TEXTURE_LEFT = 0
 TEXTURE_RIGHT = 1
@@ -61,6 +62,11 @@ class MyGame(arcade.Window):
 
         self.physics_engine = None
 
+        self.left_pressed = False
+        self.right_pressed = False
+        self.up_pressed = False
+        self.down_pressed = False
+
         # Create the cameras. One for the GUI, one for the sprites.
         # We scroll the 'sprite world' but not the GUI.
         self.camera_sprites = arcade.Camera(SCREEN_WIDTH, SCREEN_HEIGHT)
@@ -82,15 +88,13 @@ class MyGame(arcade.Window):
         # Set wall and coin SpriteLists
         # Any other layers here. Array index must be a layer.
         self.static_walls_list = self.tile_map.sprite_lists["Static Walls"]
-
-        """self.moving_walls_list = self.tile_map.sprite_lists["Moving Walls"]
-        self.all_walls_list.append(self.moving_walls_list)"""
+        self.moving_walls_list = self.tile_map.sprite_lists["Moving Walls"]
 
         # Set the background color
         if self.tile_map.background_color:
             arcade.set_background_color(self.tile_map.background_color)
 
-        all_walls_list = [self.static_walls_list]
+        all_walls_list = [self.static_walls_list, self.moving_walls_list]
 
         # Keep player from running through the wall_list layer
         self.physics_engine = arcade.PhysicsEnginePlatformer(self.player_sprite, all_walls_list,
@@ -100,39 +104,47 @@ class MyGame(arcade.Window):
         """ Draw everything """
         arcade.start_render()
 
+        self.camera_sprites.use()
+
         self.player_list.draw()
         self.static_walls_list.draw()
         self.moving_walls_list.draw()
 
-        self.camera_sprites.use()
         self.camera_gui.use()
-
         arcade.draw_rectangle_filled(self.width // 2, 20, self.width, 40, arcade.color.ALMOND)
-
         arcade.draw_text(f"Score: {self.score}", 10, 10, arcade.color.BLACK_BEAN, 20)
 
     def on_key_press(self, key, modifiers):
-        """Called whenever a key is pressed. """
-
+        """
+        Called whenever a key is pressed.
+        """
         if key == arcade.key.UP:
-            self.player_sprite.change_y = PLAYER_MOVEMENT_SPEED
-        elif key == arcade.key.DOWN:
-            self.player_sprite.change_y = -PLAYER_MOVEMENT_SPEED
+            if self.physics_engine.can_jump():
+                self.player_sprite.change_y = JUMP_SPEED
         elif key == arcade.key.LEFT:
-            self.player_sprite.change_x = -PLAYER_MOVEMENT_SPEED
+            self.left_pressed = True
         elif key == arcade.key.RIGHT:
-            self.player_sprite.change_x = PLAYER_MOVEMENT_SPEED
+            self.right_pressed = True
 
     def on_key_release(self, key, modifiers):
         """Called when the user releases a key. """
 
-        if key == arcade.key.UP or key == arcade.key.DOWN:
-            self.player_sprite.change_y = 0
-        elif key == arcade.key.LEFT or key == arcade.key.RIGHT:
-            self.player_sprite.change_x = 0
+        if key == arcade.key.LEFT:
+            self.left_pressed = False
+        elif key == arcade.key.RIGHT:
+            self.right_pressed = False
 
     def on_update(self, delta_time):
         """ Movement and game logic """
+
+        # Calculate speed based on the keys pressed
+        self.player_sprite.change_x = 0
+
+        if self.left_pressed and not self.right_pressed:
+            self.player_sprite.change_x = -PLAYER_MOVEMENT_SPEED
+        elif self.right_pressed and not self.left_pressed:
+            self.player_sprite.change_x = PLAYER_MOVEMENT_SPEED
+
         self.physics_engine.update()
         self.moving_walls_list.update()
         self.player_list.update()
@@ -142,16 +154,21 @@ class MyGame(arcade.Window):
     def scroll_to_player(self):
         """
         Scroll the window to the player.
+
+        if CAMERA_SPEED is 1, the camera will immediately move to the desired position.
+        Anything between 0 and 1 will have the camera move to the location with a smoother
+        pan.
         """
+
         position = self.player_sprite.center_x - self.width / 2, \
-            self.player_sprite.center_y - self.height / 2
+                   self.player_sprite.center_y - self.height / 2
         self.camera_sprites.move_to(position, CAMERA_SPEED)
 
     def on_resize(self, width, height):
         """
-            Resize window
-            Handle the user grabbing the edge and resizing the window.
-            """
+        Resize window
+        Handle the user grabbing the edge and resizing the window.
+        """
         self.camera_sprites.resize(int(width), int(height))
         self.camera_gui.resize(int(width), int(height))
 

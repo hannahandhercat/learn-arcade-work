@@ -54,7 +54,6 @@ class MyGame(arcade.Window):
         self.player_list = None
         self.static_walls_list = None
         self.moving_walls_list = None
-        self.all_walls_list = None
 
         self.tile_map = None
 
@@ -72,29 +71,29 @@ class MyGame(arcade.Window):
         self.player_list = arcade.SpriteList()
         self.static_walls_list = arcade.SpriteList()
         self.moving_walls_list = arcade.SpriteList()
-        self.all_walls_list = arcade.SpriteList()
 
         self.player_sprite = Player()
         self.player_sprite.center_x = 200
         self.player_sprite.center_y = 500
         self.player_list.append(self.player_sprite)
 
-        self.tile_map = arcade.load_tilemap("Final_Lab_test_1b.json", scaling=SPRITE_SCALING)
+        self.tile_map = arcade.load_tilemap("final_lab_3.json", scaling=SPRITE_SCALING)
 
         # Set wall and coin SpriteLists
         # Any other layers here. Array index must be a layer.
         self.static_walls_list = self.tile_map.sprite_lists["Static Walls"]
-        self.all_walls_list.append(self.static_walls_list)
 
-        self.moving_walls_list = self.tile_map.sprite_lists["Moving Walls"]
-        self.all_walls_list.append(self.moving_walls_list)
+        """self.moving_walls_list = self.tile_map.sprite_lists["Moving Walls"]
+        self.all_walls_list.append(self.moving_walls_list)"""
 
         # Set the background color
         if self.tile_map.background_color:
             arcade.set_background_color(self.tile_map.background_color)
 
+        all_walls_list = [self.static_walls_list]
+
         # Keep player from running through the wall_list layer
-        self.physics_engine = arcade.PhysicsEnginePlatformer(self.player_sprite, self.all_walls_list,
+        self.physics_engine = arcade.PhysicsEnginePlatformer(self.player_sprite, all_walls_list,
                                                              gravity_constant=.5)
 
     def on_draw(self):

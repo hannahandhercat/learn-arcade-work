@@ -31,13 +31,30 @@ function, or grouping all the variables within a function together.
 
 3. When evaluating the accuracy of your code, it's important to try and test
 for every possible scenario and outcome, and make sure they all line up with
-what's expected.
-- Does it crash when you run it?
-- Deciphering and understanding the errors
-- Do you get your expected output?
-- Using print statements to figure out what's going on
+what's expected. A good way to see if something is wrong with your code is to
+test and see if certain commands cause the program to crash. If and when your
+code crashes it's also important to decipher what the error you're getting means
+and how to fix it. It's also important to see if you have gotten your expected
+output, say you wanted a character to jump when you hit the space bar, but they
+move to the left instead, then there is probably something wrong with your code
+even though it's technically running fine. When all else fails and you just can't
+figure out what the problem is, try printing the output of different variables
+and lists, so that you can see what the computer is trying to read, and if it's
+what you expected to be there.
 
-4.
-- Our world is completely targeted at what we like, isolating us, making us
-forget there's more to the world than just what we're interested in.
-- People are much more complex than just a number or a score.
+4. What makes humans so different from computers is that people can evolve and
+change overtime, whereas a computer will always function and behave in a very
+particular and certain way. You can't evaluate a students ability based on test
+scores alone because we as people have the innate ability to learn and grow, with
+time and persistence we can achieve great things, a computer can't change unless
+a human programs it to. Algorithms are helpful and can help us visualize and
+shape the future we want, however these are still set systems that cannot explain
+the entirety of our existence. People are complex and ever-changing due to our
+experiences and emotions. One day we might love cherries but one bad case of
+food poisoning can easily make us hate them. A computer will like cherries if we
+tell it to, and dislike cherries if we tell it to. It has no real opinions of its
+own, and it can't simply form one. An algorithm may teach the computer to "learn",
+but at it's core, it's still using logic and reasoning to form its assumption.
+Humans hold the incredible ability to make "irrational" and "illogical" decisions
+just because we can. This is why we can never truly replace humans with machines,
+no matter how complex we try and make them.

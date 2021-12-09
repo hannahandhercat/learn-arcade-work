@@ -89,6 +89,7 @@ class MyGame(arcade.Window):
         # Any other layers here. Array index must be a layer.
         self.static_walls_list = self.tile_map.sprite_lists["Static Walls"]
         self.moving_walls_list = self.tile_map.sprite_lists["Moving Walls"]
+        # You're going to need to make some hit-list and junk for the new layer! good luck girl.
 
         # Set the background color
         if self.tile_map.background_color:
@@ -113,6 +114,9 @@ class MyGame(arcade.Window):
         self.camera_gui.use()
         arcade.draw_rectangle_filled(self.width // 2, 20, self.width, 40, arcade.color.ALMOND)
         arcade.draw_text(f"Score: {self.score}", 10, 10, arcade.color.BLACK_BEAN, 20)
+
+        if self.player_sprite.center_y <= -1:
+            arcade.draw_text("Game Over", 200, 200, arcade.csscolor.BLACK)
 
     def on_key_press(self, key, modifiers):
         """
@@ -146,10 +150,12 @@ class MyGame(arcade.Window):
             self.player_sprite.change_x = PLAYER_MOVEMENT_SPEED
 
         self.physics_engine.update()
-        self.moving_walls_list.update()
-        self.player_list.update()
 
-        self.scroll_to_player()
+        if self.player_sprite.center_y > -1:
+            self.player_list.update()
+            self.moving_walls_list.update()
+            self.scroll_to_player()
+
 
     def scroll_to_player(self):
         """

@@ -42,7 +42,47 @@ class Player(arcade.Sprite):
 
 
 class InstructionView(arcade.View):
-    pass
+    def on_show(self):
+        """ This is run once when we switch to this view """
+        arcade.set_background_color(arcade.csscolor.DARK_SLATE_BLUE)
+
+        arcade.set_viewport(0, self.window.width, 0, self.window.height)
+
+    def on_draw(self):
+        """ Draw this view """
+        arcade.start_render()
+        arcade.draw_text("Instructions Screen", self.window.width / 2, self.window.height / 2,
+                         arcade.color.WHITE, font_size=50, anchor_x="center")
+        arcade.draw_text("Hit any key to play", self.window.width / 2, self.window.height / 2 - 75,
+                         arcade.color.WHITE, font_size=20, anchor_x="center")
+
+    def on_key_press(self, symbol: int, modifiers: int):
+        """ If the user presses a key start the game. """
+        game_view = GameView()
+        game_view.setup()
+        self.window.show_view(game_view)
+
+
+class GameOverView(arcade.View):
+    def on_show(self):
+        """ This is run once when we switch to this view """
+        arcade.set_background_color(arcade.csscolor.DARK_SLATE_BLUE)
+
+        arcade.set_viewport(0, self.window.width, 0, self.window.height)
+
+    def on_draw(self):
+        """ Draw this view """
+        arcade.start_render()
+        arcade.draw_text("Game Over", self.window.width / 2, self.window.height / 2,
+                         arcade.color.WHITE, font_size=50, anchor_x="center")
+        arcade.draw_text("Click to try again", self.window.width / 2, self.window.height / 2 - 75,
+                         arcade.color.WHITE, font_size=20, anchor_x="center")
+
+    def on_mouse_press(self, _x, _y, _button, _modifiers):
+        """ If the user presses the mouse button, start the game. """
+        game_view = GameView()
+        game_view.setup()
+        self.window.show_view(game_view)
 
 
 class GameView(arcade.View):
@@ -89,6 +129,7 @@ class GameView(arcade.View):
         self.player_sprite.center_y = 500
         self.player_list.append(self.player_sprite)
 
+        # Sprites downloaded from Kenny.nl jumper pack.
         self.tile_map = arcade.load_tilemap("final_lab_3.json", scaling=SPRITE_SCALING)
 
         # Set wall and coin SpriteLists
@@ -96,7 +137,6 @@ class GameView(arcade.View):
         self.static_walls_list = self.tile_map.sprite_lists["Static Walls"]
         self.moving_walls_list = self.tile_map.sprite_lists["Moving Walls"]
         self.coin_list = self.tile_map.sprite_lists["Coins"]
-        # You're going to need to make some hit-list and junk for the new layer! good luck girl.
 
         # Set the background color
         if self.tile_map.background_color:
@@ -122,9 +162,6 @@ class GameView(arcade.View):
         self.camera_gui.use()
         arcade.draw_rectangle_filled(self.window.width // 2, 20, self.window.width, 40, arcade.color.ALMOND)
         arcade.draw_text(f"Score: {self.score}", 10, 10, arcade.color.BLACK_BEAN, 20)
-
-        if self.player_sprite.center_y <= -1:
-            arcade.draw_text("Game Over", 200, 200, arcade.csscolor.BLACK)
 
     def on_key_press(self, key, modifiers):
         """
@@ -167,6 +204,9 @@ class GameView(arcade.View):
             self.player_list.update()
             self.moving_walls_list.update()
             self.scroll_to_player()
+        else:
+            view = GameOverView()
+            self.window.show_view(view)
 
     def scroll_to_player(self):
         """
@@ -193,9 +233,8 @@ class GameView(arcade.View):
 def main():
     """ Main function """
     window = arcade.Window(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
-    start_view = GameView()
+    start_view = InstructionView()
     window.show_view(start_view)
-    start_view.setup()
     arcade.run()
 
 

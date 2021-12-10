@@ -41,20 +41,25 @@ class Player(arcade.Sprite):
             self.texture = self.textures[TEXTURE_RIGHT]
 
 
-class MyGame(arcade.Window):
+class InstructionView(arcade.View):
+    pass
+
+
+class GameView(arcade.View):
     """ Main Window """
 
-    def __init__(self, width, height, title):
+    def __init__(self):
         """ Create the variables """
 
         # Init the parent class
-        super().__init__(width, height, title)
+        super().__init__()
 
         self.player_sprite = None
 
         self.player_list = None
         self.static_walls_list = None
         self.moving_walls_list = None
+        self.coin_list = None
 
         self.tile_map = None
 
@@ -77,6 +82,7 @@ class MyGame(arcade.Window):
         self.player_list = arcade.SpriteList()
         self.static_walls_list = arcade.SpriteList()
         self.moving_walls_list = arcade.SpriteList()
+        self.coin_list = arcade.SpriteList()
 
         self.player_sprite = Player()
         self.player_sprite.center_x = 200
@@ -89,6 +95,7 @@ class MyGame(arcade.Window):
         # Any other layers here. Array index must be a layer.
         self.static_walls_list = self.tile_map.sprite_lists["Static Walls"]
         self.moving_walls_list = self.tile_map.sprite_lists["Moving Walls"]
+        self.coin_list = self.tile_map.sprite_lists["Coins"]
         # You're going to need to make some hit-list and junk for the new layer! good luck girl.
 
         # Set the background color
@@ -110,9 +117,10 @@ class MyGame(arcade.Window):
         self.player_list.draw()
         self.static_walls_list.draw()
         self.moving_walls_list.draw()
+        self.coin_list.draw()
 
         self.camera_gui.use()
-        arcade.draw_rectangle_filled(self.width // 2, 20, self.width, 40, arcade.color.ALMOND)
+        arcade.draw_rectangle_filled(self.window.width // 2, 20, self.window.width, 40, arcade.color.ALMOND)
         arcade.draw_text(f"Score: {self.score}", 10, 10, arcade.color.BLACK_BEAN, 20)
 
         if self.player_sprite.center_y <= -1:
@@ -151,11 +159,14 @@ class MyGame(arcade.Window):
 
         self.physics_engine.update()
 
+        coin_hit_list = arcade.check_for_collision_with_list(self.player_sprite, self.coin_list)
+        for coin in coin_hit_list:
+            coin.remove_from_sprite_lists()
+
         if self.player_sprite.center_y > -1:
             self.player_list.update()
             self.moving_walls_list.update()
             self.scroll_to_player()
-
 
     def scroll_to_player(self):
         """
@@ -166,8 +177,8 @@ class MyGame(arcade.Window):
         pan.
         """
 
-        position = self.player_sprite.center_x - self.width / 2, \
-                   self.player_sprite.center_y - self.height / 2
+        position = self.player_sprite.center_x - self.window.width / 2, \
+                   self.player_sprite.center_y - self.window.height / 2
         self.camera_sprites.move_to(position, CAMERA_SPEED)
 
     def on_resize(self, width, height):
@@ -181,8 +192,10 @@ class MyGame(arcade.Window):
 
 def main():
     """ Main function """
-    window = MyGame(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
-    window.setup()
+    window = arcade.Window(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
+    start_view = GameView()
+    window.show_view(start_view)
+    start_view.setup()
     arcade.run()
 
 

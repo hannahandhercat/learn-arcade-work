@@ -230,6 +230,10 @@ class GameView(arcade.View):
         self.camera_gui.resize(int(width), int(height))
 
 
+class LevelTwoView(arcade.View):
+    pass
+
+
 def main():
     """ Main function """
     window = arcade.Window(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)

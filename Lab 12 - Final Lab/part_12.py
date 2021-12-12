@@ -80,11 +80,14 @@ class GameOverView(arcade.View):
         arcade.draw_text("Click to try again", self.window.width / 2, self.window.height / 2 - 75,
                          arcade.color.WHITE, font_size=20, anchor_x="center")
 
-    def on_mouse_press(self, _x, _y, _button, _modifiers):
+    def on_key_press(self, key: int, modifiers: int):
         """ If the user presses the mouse button, start the game. """
-        level_view = LevelOneView()
-        level_view.setup()
-        self.window.show_view(level_view)
+        if key == arcade.key.Q:
+            pass
+        else:
+            level_view = LevelOneView()
+            level_view.setup()
+            self.window.show_view(level_view)
 
 
 class LevelOneCompleteView(arcade.View):
@@ -99,7 +102,8 @@ class LevelOneCompleteView(arcade.View):
         arcade.start_render()
         arcade.draw_text("Level One Complete!", self.window.width / 2, self.window.height / 2,
                          arcade.color.WHITE, font_size=50, anchor_x="center")
-        arcade.draw_text("Hit any key continue on to the next level", self.window.width / 2, self.window.height / 2 - 75,
+        arcade.draw_text("Hit any key continue on to the next level", self.window.width / 2,
+                         self.window.height / 2 - 75,
                          arcade.color.WHITE, font_size=20, anchor_x="center")
 
     def on_key_press(self, symbol: int, modifiers: int):
@@ -121,7 +125,8 @@ class LevelTwoCompleteView(arcade.View):
         arcade.start_render()
         arcade.draw_text("Level Two Complete!", self.window.width / 2, self.window.height / 2,
                          arcade.color.WHITE, font_size=50, anchor_x="center")
-        arcade.draw_text("Hit any key continue on to the next level", self.window.width / 2, self.window.height / 2 - 75,
+        arcade.draw_text("Hit any key continue on to the next level", self.window.width / 2,
+                         self.window.height / 2 - 75,
                          arcade.color.WHITE, font_size=20, anchor_x="center")
 
     def on_key_press(self, symbol: int, modifiers: int):
@@ -139,6 +144,8 @@ class LevelOneView(arcade.View):
 
         # Init the parent class
         super().__init__()
+
+        self.level_complete = False
 
         self.player_sprite = None
 
@@ -158,6 +165,14 @@ class LevelOneView(arcade.View):
         self.right_pressed = False
         self.up_pressed = False
         self.down_pressed = False
+
+        self.jump_sound = arcade.load_sound("jump_sound.wav")
+        self.coin_sound = arcade.load_sound("coin_sound.wav")
+        self.carrot_sound = arcade.load_sound("carrot_sound.wav")
+
+        self.music = arcade.load_sound("Grasslands Theme.mp3")
+        self.music_player = None
+        self.music_stop = None
 
         # Create the cameras. One for the GUI, one for the sprites.
         # We scroll the 'sprite world' but not the GUI.
@@ -220,21 +235,11 @@ class LevelOneView(arcade.View):
         if key == arcade.key.UP:
             if self.physics_engine.can_jump():
                 self.player_sprite.change_y = JUMP_SPEED
+                arcade.play_sound(self.jump_sound)
         elif key == arcade.key.LEFT:
             self.left_pressed = True
         elif key == arcade.key.RIGHT:
             self.right_pressed = True
-
-    def on_key_release(self, key, modifiers):
-        """Called when the user releases a key. """
-
-        if key == arcade.key.LEFT:
-            self.left_pressed = False
-        elif key == arcade.key.RIGHT:
-            self.right_pressed = False
-
-    def on_update(self, delta_time):
-        """ Movement and game logic """
 
         # Calculate speed based on the keys pressed
         self.player_sprite.change_x = 0
@@ -244,26 +249,54 @@ class LevelOneView(arcade.View):
         elif self.right_pressed and not self.left_pressed:
             self.player_sprite.change_x = PLAYER_MOVEMENT_SPEED
 
+    def on_key_release(self, key, modifiers):
+        """Called when the user releases a key. """
+
+        if key == arcade.key.LEFT:
+            self.left_pressed = False
+        elif key == arcade.key.RIGHT:
+            self.right_pressed = False
+
+        # Calculate speed based on the keys pressed
+        self.player_sprite.change_x = 0
+
+        if self.left_pressed and not self.right_pressed:
+            self.player_sprite.change_x = -PLAYER_MOVEMENT_SPEED
+        elif self.right_pressed and not self.left_pressed:
+            self.player_sprite.change_x = PLAYER_MOVEMENT_SPEED
+
+    def on_update(self, delta_time):
+        """ Movement and game logic """
+
         self.physics_engine.update()
 
         coin_hit_list = arcade.check_for_collision_with_list(self.player_sprite, self.coin_list)
         for coin in coin_hit_list:
+            self.level_complete = True
+            arcade.play_sound(self.coin_sound)
             coin.remove_from_sprite_lists()
             view = LevelOneCompleteView()
             self.window.show_view(view)
 
+        if not self.music_player or not self.music_player.playing and self.level_complete is False:
+            self.music_player = arcade.play_sound(self.music)
+
         carrot_hit_list = arcade.check_for_collision_with_list(self.player_sprite, self.carrot_list)
         for carrot in carrot_hit_list:
+            arcade.play_sound(self.carrot_sound)
             carrot.remove_from_sprite_lists()
             self.score += 1
 
         if self.player_sprite.center_y > -1:
             self.player_list.update()
-            self.moving_walls_list.update()
             self.scroll_to_player()
         else:
             view = GameOverView()
             self.window.show_view(view)
+
+        if not self.music_player or not self.music_player.playing:
+            self.music_player = arcade.play_sound(self.music)
+            return self.music_player
 
     def scroll_to_player(self):
         """
@@ -312,6 +345,13 @@ class LevelTwoView(arcade.View):
         self.right_pressed = False
         self.up_pressed = False
         self.down_pressed = False
+
+        self.jump_sound = arcade.load_sound("jump_sound.wav")
+        self.coin_sound = arcade.load_sound("coin_sound.wav")
+        self.carrot_sound = arcade.load_sound("carrot_sound.wav")
+
+        self.music = arcade.load_sound("Desert Theme.mp3")
+        self.music_player = None
 
         # Create the cameras. One for the GUI, one for the sprites.
         # We scroll the 'sprite world' but not the GUI.
@@ -373,21 +413,11 @@ class LevelTwoView(arcade.View):
         if key == arcade.key.UP:
             if self.physics_engine.can_jump():
                 self.player_sprite.change_y = JUMP_SPEED
+                arcade.play_sound(self.jump_sound)
         elif key == arcade.key.LEFT:
             self.left_pressed = True
         elif key == arcade.key.RIGHT:
             self.right_pressed = True
-
-    def on_key_release(self, key, modifiers):
-        """Called when the user releases a key. """
-
-        if key == arcade.key.LEFT:
-            self.left_pressed = False
-        elif key == arcade.key.RIGHT:
-            self.right_pressed = False
-
-    def on_update(self, delta_time):
-        """ Movement and game logic """
 
         # Calculate speed based on the keys pressed
         self.player_sprite.change_x = 0
@@ -397,26 +427,49 @@ class LevelTwoView(arcade.View):
         elif self.right_pressed and not self.left_pressed:
             self.player_sprite.change_x = PLAYER_MOVEMENT_SPEED
 
+    def on_key_release(self, key, modifiers):
+        """Called when the user releases a key. """
+
+        if key == arcade.key.LEFT:
+            self.left_pressed = False
+        elif key == arcade.key.RIGHT:
+            self.right_pressed = False
+
+        # Calculate speed based on the keys pressed
+        self.player_sprite.change_x = 0
+
+        if self.left_pressed and not self.right_pressed:
+            self.player_sprite.change_x = -PLAYER_MOVEMENT_SPEED
+        elif self.right_pressed and not self.left_pressed:
+            self.player_sprite.change_x = PLAYER_MOVEMENT_SPEED
+
+    def on_update(self, delta_time):
+        """ Movement and game logic """
+
         self.physics_engine.update()
 
         coin_hit_list = arcade.check_for_collision_with_list(self.player_sprite, self.coin_list)
         for coin in coin_hit_list:
+            arcade.play_sound(self.coin_sound)
             coin.remove_from_sprite_lists()
             view = LevelTwoCompleteView()
             self.window.show_view(view)
 
         carrot_hit_list = arcade.check_for_collision_with_list(self.player_sprite, self.carrot_list)
         for carrot in carrot_hit_list:
+            arcade.play_sound(self.carrot_sound)
             carrot.remove_from_sprite_lists()
             self.score += 1
 
         if self.player_sprite.center_y > -1:
             self.player_list.update()
-            self.moving_walls_list.update()
             self.scroll_to_player()
         else:
             view = GameOverView()
             self.window.show_view(view)
+
+        if not self.music_player or not self.music_player.playing:
+            self.music_player = arcade.play_sound(self.music)
 
     def scroll_to_player(self):
         """
@@ -464,6 +517,10 @@ class LevelThreeView(arcade.View):
         self.right_pressed = False
         self.up_pressed = False
         self.down_pressed = False
+
+        self.jump_sound = arcade.load_sound("jump_sound.wav")
+        self.coin_sound = arcade.load_sound("coin_sound.wav")
+        self.carrot_sound = arcade.load_sound("carrot_sound.wav")
 
         # Create the cameras. One for the GUI, one for the sprites.
         # We scroll the 'sprite world' but not the GUI.
@@ -523,21 +580,11 @@ class LevelThreeView(arcade.View):
         if key == arcade.key.UP:
             if self.physics_engine.can_jump():
                 self.player_sprite.change_y = JUMP_SPEED
+                arcade.play_sound(self.jump_sound)
         elif key == arcade.key.LEFT:
             self.left_pressed = True
         elif key == arcade.key.RIGHT:
             self.right_pressed = True
-
-    def on_key_release(self, key, modifiers):
-        """Called when the user releases a key. """
-
-        if key == arcade.key.LEFT:
-            self.left_pressed = False
-        elif key == arcade.key.RIGHT:
-            self.right_pressed = False
-
-    def on_update(self, delta_time):
-        """ Movement and game logic """
 
         # Calculate speed based on the keys pressed
         self.player_sprite.change_x = 0
@@ -547,15 +594,40 @@ class LevelThreeView(arcade.View):
         elif self.right_pressed and not self.left_pressed:
             self.player_sprite.change_x = PLAYER_MOVEMENT_SPEED
 
+    def on_key_release(self, key, modifiers):
+        """Called when the user releases a key. """
+
+        if key == arcade.key.LEFT:
+            self.left_pressed = False
+        elif key == arcade.key.RIGHT:
+            self.right_pressed = False
+
+        # Calculate speed based on the keys pressed
+        self.player_sprite.change_x = 0
+
+        if self.left_pressed and not self.right_pressed:
+            self.player_sprite.change_x = -PLAYER_MOVEMENT_SPEED
+        elif self.right_pressed and not self.left_pressed:
+            self.player_sprite.change_x = PLAYER_MOVEMENT_SPEED
+
+    def on_update(self, delta_time):
+        """ Movement and game logic """
+
         self.physics_engine.update()
 
         coin_hit_list = arcade.check_for_collision_with_list(self.player_sprite, self.coin_list)
         for coin in coin_hit_list:
+            arcade.play_sound(self.coin_sound)
             coin.remove_from_sprite_lists()
+
+        carrot_hit_list = arcade.check_for_collision_with_list(self.player_sprite, self.carrot_list)
+        for carrot in carrot_hit_list:
+            arcade.play_sound(self.carrot_sound)
+            carrot.remove_from_sprite_lists()
+            self.score += 1
 
         if self.player_sprite.center_y > -1:
             self.player_list.update()
-            self.moving_walls_list.update()
             self.scroll_to_player()
         else:
             view = GameOverView()

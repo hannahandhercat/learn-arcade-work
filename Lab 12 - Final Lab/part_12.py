@@ -456,7 +456,7 @@ class LevelTwoView(arcade.View):
 
         # Create the user's player.
         self.player_sprite = Player()
-        self.player_sprite.center_x = 100
+        self.player_sprite.center_x = 300
         self.player_sprite.center_y = 350
         self.player_list.append(self.player_sprite)
 
